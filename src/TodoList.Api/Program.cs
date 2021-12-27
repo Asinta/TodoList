@@ -1,5 +1,4 @@
 using TodoList.Api.Extensions;
-using TodoList.Api.Middlewares;
 using TodoList.Application;
 using TodoList.Infrastructure;
 using TodoList.Infrastructure.Log;
