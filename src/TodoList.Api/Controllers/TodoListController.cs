@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Models;
 using TodoList.Application.TodoLists.Commands.CreateTodoList;
+using TodoList.Application.TodoLists.Commands.DeleteTodoList;
 using TodoList.Application.TodoLists.Queries.GetSingleTodo;
 using TodoList.Application.TodoLists.Queries.GetTodos;
 
@@ -34,5 +35,11 @@ public class TodoListController : ControllerBase
     public async Task<ApiResponse<Domain.Entities.TodoList>> Create([FromBody] CreateTodoListCommand command)
     {
         return ApiResponse<Domain.Entities.TodoList>.Success(await _mediator.Send(command));
+    }
+    
+    [HttpDelete("{id:guid}")]
+    public async Task<ApiResponse<object>> Delete(Guid id)
+    {
+        return ApiResponse<object>.Success(await _mediator.Send(new DeleteTodoListCommand { Id = id }));
     }
 }

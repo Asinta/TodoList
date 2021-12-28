@@ -22,5 +22,9 @@ public class TodoItemDto : IMapFrom<TodoItem>
     {
         profile.CreateMap<TodoItem, TodoItemDto>()
             .ForMember(d => d.Priority, opt => opt.MapFrom(s => (int)s.Priority));
+        
+        profile.CreateMap<TodoItem, TodoItemDto>()
+            .ForMember(d => d.Priority, opt => opt.MapFrom(s => (int)s.Priority))
+            .ReverseMap();
     }
 }

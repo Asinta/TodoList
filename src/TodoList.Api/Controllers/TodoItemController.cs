@@ -1,8 +1,11 @@
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Models;
 using TodoList.Application.TodoItems.Commands.CreateTodoItem;
+using TodoList.Application.TodoItems.Commands.PatchTodoItem;
 using TodoList.Application.TodoItems.Commands.UpdateTodoItem;
+using TodoList.Application.TodoItems.Queries.GetTodoItems;
 using TodoList.Domain.Entities;
 
 namespace TodoList.Api.Controllers;
@@ -32,5 +35,23 @@ public class TodoItemController : ControllerBase
         }
         
         return ApiResponse<TodoItem>.Success(await _mediator.Send(command));
+    }
+    
+    [HttpPatch("{id:guid}")]
+    public async Task<ApiResponse<TodoItem>> Patch(Guid id, [FromBody] JsonPatchDocument<TestPatchTodo> command)
+    {
+        if (command is null)
+        {
+            return ApiResponse<TodoItem>.Fail("patch document should not be null");
+        }
+        
+        // if (id != command.Id)
+        // {
+            // return ApiResponse<TodoItem>.Fail("Query id not match witch body");
+        // }
+        return ApiResponse<TodoItem>.Fail("BINGO");
+        
+        
+        // return ApiResponse<TodoItem>.Success(await _mediator.Send(command));
     }
 }

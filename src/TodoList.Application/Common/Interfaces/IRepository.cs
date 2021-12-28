@@ -40,4 +40,6 @@ public interface IRepository<T> where T : class
     Task DeleteAsync(object key);
     Task DeleteAsync(T entity, CancellationToken cancellationToken = default);
     Task DeleteRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

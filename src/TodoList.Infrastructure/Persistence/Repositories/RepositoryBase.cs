@@ -95,7 +95,11 @@ public class RepositoryBase<T> : IRepository<T> where T : class
         => null != spec ?
             await ApplySpecification(spec).AsNoTracking().GroupBy(groupExpression).Select(selector).ToListAsync() :
             await _dbContext.Set<T>().AsNoTracking().GroupBy(groupExpression).Select(selector).ToListAsync();
-    
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
     private IQueryable<T> ApplySpecification(ISpecification<T>? spec) 
         => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>().AsQueryable(), spec);
 }
