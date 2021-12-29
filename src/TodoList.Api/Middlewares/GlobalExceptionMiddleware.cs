@@ -1,5 +1,6 @@
 using System.Net;
 using TodoList.Api.Models;
+using TodoList.Application.Common.Exceptions;
 
 namespace TodoList.Api.Middlewares;
 
@@ -37,7 +38,7 @@ public class GlobalExceptionMiddleware
             KeyNotFoundException => (int)HttpStatusCode.NotFound,
             _ => (int)HttpStatusCode.InternalServerError
         };
-        
+
         var responseModel = ApiResponse<string>.Fail(exception.Message);
 
         await context.Response.WriteAsync(responseModel.ToJsonString());

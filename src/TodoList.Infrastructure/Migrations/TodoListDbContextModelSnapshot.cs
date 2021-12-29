@@ -95,6 +95,12 @@ namespace TodoList.Infrastructure.Migrations
                         .WithMany("Items")
                         .HasForeignKey("ListId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .OnDelete(DeleteBehavior.ClientSetNull)
                         .IsRequired();
 
                     b.Navigation("List");
