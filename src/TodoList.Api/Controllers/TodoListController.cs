@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using TodoList.Api.Filters;
 using TodoList.Api.Models;
 using TodoList.Application.TodoLists.Commands.CreateTodoList;
 using TodoList.Application.TodoLists.Commands.DeleteTodoList;
@@ -32,6 +33,7 @@ public class TodoListController : ControllerBase
     }
     
     [HttpPost]
+    [ServiceFilter(typeof(LogFilterAttribute))]
     public async Task<ApiResponse<Domain.Entities.TodoList>> Create([FromBody] CreateTodoListCommand command)
     {
         return ApiResponse<Domain.Entities.TodoList>.Success(await _mediator.Send(command));

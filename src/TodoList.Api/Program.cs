@@ -1,4 +1,5 @@
 using TodoList.Api.Extensions;
+using TodoList.Api.Filters;
 using TodoList.Application;
 using TodoList.Infrastructure;
 using TodoList.Infrastructure.Log;
@@ -11,6 +12,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<LogFilterAttribute>();
 
 // 添加应用层配置
 builder.Services.AddApplication();
