@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Models;
+using TodoList.Application.Common.Models;
 using TodoList.Application.TodoItems.Commands.CreateTodoItem;
 using TodoList.Application.TodoItems.Commands.PatchTodoItem;
 using TodoList.Application.TodoItems.Commands.UpdateTodoItem;
@@ -53,5 +54,12 @@ public class TodoItemController : ControllerBase
         
         
         // return ApiResponse<TodoItem>.Success(await _mediator.Send(command));
+    }
+    
+    // 对于查询来说，一般参数是来自查询字符串的，所以这里用[FromQuery]
+    [HttpGet]
+    public async Task<ApiResponse<PaginatedList<TodoItemDto>>> GetTodoItemsWithCondition([FromQuery] GetTodoItemsWithConditionQuery query)
+    {
+        return ApiResponse<PaginatedList<TodoItemDto>>.Success(await _mediator.Send(query));
     }
 }

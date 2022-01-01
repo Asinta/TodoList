@@ -55,6 +55,8 @@ public class RepositoryBase<T> : IRepository<T> where T : class
 
     public IQueryable<T> GetAsQueryable(ISpecification<T> spec)
         => ApplySpecification(spec);
+    public IQueryable<T> GetAsQueryable(Expression<Func<T, bool>> condition)
+        => _dbContext.Set<T>().Where(condition);
 
     // 2. 查询数量相关接口实现
     public int Count(Expression<Func<T, bool>> condition) 
