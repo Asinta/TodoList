@@ -1,4 +1,7 @@
+using AspNetCoreRateLimit;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Extensions;
 using TodoList.Api.Filters;
 using TodoList.Application;
@@ -9,7 +12,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.ConfigureLog();
-builder.Services.AddControllers();
+builder.Services.ConfigureApiVersioning();
+builder.Services.AddResponseCaching();
+builder.Services.AddHttpCacheHeaders(
+    expirationOptions =>
+    {
+        expirationOptions.MaxAge = 180;
+        expirationOptions.CacheLocation = CacheLocation.Private;
+    },
+    validateOptions =>
+    {
+        validateOptions.MustRevalidate = true;
+    });
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimiting();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add("60SecondDuration", new CacheProfile { Duration = 60 });
+});
 builder.Services.AddHttpLogging(options =>
 {
     // 日志记录的字段配置，可以以 | 连接
@@ -48,8 +69,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseIpRateLimiting();
 app.UseAuthorization();
 app.UseHttpLogging();
+app.UseResponseCaching();
+app.UseHttpCacheHeaders();
 app.MapControllers();
 
 app.MigrateDatabase();

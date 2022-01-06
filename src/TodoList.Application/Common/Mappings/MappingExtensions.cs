@@ -16,4 +16,9 @@ public static class MappingExtensions
     {
         return queryable.ProjectTo<TDestination>(configuration).ToListAsync();
     }
+    
+    public static PaginatedList<TDestination> PaginatedListFromEnumerable<TDestination>(this IEnumerable<TDestination> entities, int pageNumber, int pageSize)
+    {
+        return PaginatedList<TDestination>.Create(entities, pageNumber, pageSize);   
+    }
 }

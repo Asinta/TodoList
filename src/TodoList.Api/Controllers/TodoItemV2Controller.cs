@@ -12,16 +12,15 @@ using TodoList.Domain.Entities;
 
 namespace TodoList.Api.Controllers;
 
-[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [Route("/{v:apiVersion}/todo-item")]
 [ApiController]
-public class TodoItemController : ControllerBase
+public class TodoItemV2Controller : ControllerBase
 {
     private readonly IMediator _mediator;
 
     // 注入MediatR
-    public TodoItemController(IMediator mediator) 
-        => _mediator = mediator;
+    public TodoItemV2Controller(IMediator mediator) => _mediator = mediator;
     
     [HttpPost]
     public async Task<ApiResponse<TodoItem>> Create([FromBody] CreateTodoItemCommand command)
@@ -50,7 +49,7 @@ public class TodoItemController : ControllerBase
         
         // if (id != command.Id)
         // {
-            // return ApiResponse<TodoItem>.Fail("Query id not match witch body");
+        // return ApiResponse<TodoItem>.Fail("Query id not match witch body");
         // }
         return ApiResponse<TodoItem>.Fail("BINGO");
         

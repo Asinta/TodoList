@@ -31,4 +31,13 @@ public class PaginatedList<T>
 
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }
+    
+    public static PaginatedList<T> Create(IEnumerable<T> source, int pageNumber, int pageSize)
+    {
+        var count = source.Count();
+        // 注意我们给的请求中pageNumber是从1开始的
+        var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+        return new PaginatedList<T>(items, count, pageNumber, pageSize);
+    }
 }
