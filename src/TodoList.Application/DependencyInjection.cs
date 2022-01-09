@@ -17,6 +17,8 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         services.AddScoped(typeof(IDataShaper<>), typeof(DataShaper<>));
+        
+        services.AddHealthChecks().AddCheck<ApplicationHealthCheck>("Random Health Check");
         return services;
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TodoList.Api</name>
+    </assembly>
+    <members>
+        <member name="M:TodoList.Api.Controllers.TodoListController.Create(TodoList.Application.TodoLists.Commands.CreateTodoList.CreateTodoListCommand)">
+            <summary>
+            创建新的TodoList，只有Administrator角色的用户有此权限
+            </summary>
+            <param name="command">创建TodoList命令</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

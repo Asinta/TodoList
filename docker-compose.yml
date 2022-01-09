@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+  todo-list:
+    image: todo-list
+    # 配置端口转发
+    ports:
+      - "80:80"
+      - "5001:443"
+    # 配置容器环境变量
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_HTTPS_PORT=5001
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Test@Password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    # 挂载证书路径
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    # 需要先启动数据库容器
+    depends_on:
+      - mssql
+    # todo-list通过public网络响应请求，通过private网络连接数据库容器
+    networks:
+      - private
+      - public
+        
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    # 配置端口转发，这是为从主机直接访问数据库需要的，如果没有从主机直接访问数据库的需求，只需要声明容器端口1433不做转发即可
+    ports:
+      - "1433:1433"
+    environment:
+      - SA_PASSWORD=StrongPwd123
+      - ACCEPT_EULA=Y
+    # 挂载数据目录实现持久化
+    volumes:
+      - mssqldata:/var/opt/mssql
+    networks:
+      - private
+      - public
+
+# 因为mssqldata路径之前已经创建了，所以需要在这里声明使用已有的
+volumes:
+  mssqldata:
+
+networks:
+  private:
+  public:

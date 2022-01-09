@@ -1,12 +1,14 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TodoList.Application.Common.Interfaces;
 using TodoList.Domain.Base;
 using TodoList.Domain.Base.Interfaces;
 using TodoList.Domain.Entities;
+using TodoList.Infrastructure.Identity;
 
 namespace TodoList.Infrastructure.Persistence;
-public class TodoListDbContext : DbContext
+public class TodoListDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IDomainEventService _domainEventService;
 

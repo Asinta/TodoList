@@ -12,8 +12,9 @@ using TodoList.Domain.Entities;
 
 namespace TodoList.Api.Controllers;
 
-[ApiVersion("1.0")]
-[Route("/{v:apiVersion}/todo-item")]
+
+[Route("/todo-item")]
+[ApiExplorerSettings(GroupName = "1.0")]
 [ApiController]
 public class TodoItemController : ControllerBase
 {

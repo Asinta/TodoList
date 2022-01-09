@@ -1,7 +1,9 @@
-using AspNetCoreRateLimit;
+using System.Reflection;
 using Marvin.Cache.Headers;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using TodoList.Api.Extensions;
 using TodoList.Api.Filters;
 using TodoList.Application;
@@ -13,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.ConfigureLog();
 builder.Services.ConfigureApiVersioning();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddResponseCaching();
 builder.Services.AddHttpCacheHeaders(
     expirationOptions =>
@@ -49,7 +52,40 @@ builder.Services.AddHttpLogging(options =>
     options.ResponseBodyLogLimit = 4096;
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(s =>
+{
+    s.SwaggerDoc("1.0", new OpenApiInfo { Title = "TodoList API", Version = "1.0"});
+    s.SwaggerDoc("2.0", new OpenApiInfo { Title = "TodoList API", Version = "2.0"});
+    
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    s.IncludeXmlComments(xmlPath);
+    
+    s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Add JWT with Bearer",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    
+    s.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Name = "Bearer"
+            },
+            new List<string>()
+        }
+    });
+});
 
 builder.Services.AddScoped<LogFilterAttribute>();
 
@@ -62,19 +98,39 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandler();
 // Configure the HTTP request pipeline.
+
+app.UseHttpsRedirection();
+app.UseRouting();
+// app.UseIpRateLimiting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(s =>
+    {
+        s.SwaggerEndpoint("/swagger/1.0/swagger.json", "TodoList API v1.0");
+        s.SwaggerEndpoint("/swagger/2.0/swagger.json", "TodoList API v2.0");
+    });
 }
 
-app.UseHttpsRedirection();
-app.UseIpRateLimiting();
-app.UseAuthorization();
 app.UseHttpLogging();
-app.UseResponseCaching();
-app.UseHttpCacheHeaders();
-app.MapControllers();
+// app.UseResponseCaching();
+// app.UseHttpCacheHeaders();
+var supportedCultures = new[] { "en-US", "zh" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
+app.MapDefaultControllerRoute();
+app.MapHealthChecks("/ready", new HealthCheckOptions { Predicate = _ => false });
+app.MapHealthChecks("/liveness", new HealthCheckOptions { Predicate = r => r.Name.Contains("self") });
+app.MapHealthChecks("/hc");
 
 app.MigrateDatabase();
 

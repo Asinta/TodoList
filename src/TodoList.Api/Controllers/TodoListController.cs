@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using TodoList.Api.Filters;
 using TodoList.Api.Models;
 using TodoList.Application.TodoLists.Commands.CreateTodoList;
@@ -14,11 +16,22 @@ namespace TodoList.Api.Controllers;
 public class TodoListController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IStringLocalizer<TodoListController> _localizer;
 
     // 注入MediatR
-    public TodoListController(IMediator mediator) 
-        => _mediator = mediator;
-    
+    public TodoListController(IMediator mediator, IStringLocalizer<TodoListController> localizer)
+    {
+        _mediator = mediator;
+        _localizer = localizer;
+    }
+
+    [HttpGet("meta")]
+    public ApiResponse<string> GetTodoListMeta()
+    {
+        var response = ApiResponse<string>.Success(_localizer["TodoListMeta"]);
+        return response;
+    }
+
     [HttpGet]
     public async Task<ApiResponse<List<TodoListBriefDto>>> Get()
     {
@@ -32,7 +45,13 @@ public class TodoListController : ControllerBase
                                                 throw new InvalidOperationException());
     }
     
+    /// <summary>
+    /// 创建新的TodoList，只有Administrator角色的用户有此权限
+    /// </summary>
+    /// <param name="command">创建TodoList命令</param>
+    /// <returns></returns>
     [HttpPost]
+    [Authorize(Policy = "OnlyAdmin")]
     [ServiceFilter(typeof(LogFilterAttribute))]
     public async Task<ApiResponse<Domain.Entities.TodoList>> Create([FromBody] CreateTodoListCommand command)
     {

@@ -1,12 +1,33 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TodoList.Domain.Entities;
 using TodoList.Domain.Enums;
 using TodoList.Domain.ValueObjects;
+using TodoList.Infrastructure.Identity;
 
 namespace TodoList.Infrastructure.Persistence;
 
 public static class TodoListDbContextSeed
 {
+    public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    {
+        var administratorRole = new IdentityRole("Administrator");
+
+        if (roleManager.Roles.All(r => r.Name != administratorRole.Name))
+        {
+            await roleManager.CreateAsync(administratorRole);
+        }
+
+        var administrator = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost" };
+
+        if (userManager.Users.All(u => u.UserName != administrator.UserName))
+        {
+            // 创建的用户名为admin@localhost，密码是admin123，角色是Administrator
+            await userManager.CreateAsync(administrator, "admin123");
+            await userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+        }
+    }
+    
     public static async Task SeedSampleDataAsync(TodoListDbContext context)
     {
         if (!context.TodoLists.Any())

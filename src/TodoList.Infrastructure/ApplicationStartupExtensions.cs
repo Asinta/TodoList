@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TodoList.Infrastructure.Identity;
 using TodoList.Infrastructure.Persistence;
 
 namespace TodoList.Infrastructure;
 
 public static class ApplicationStartupExtensions
 {
-    public static void MigrateDatabase(this WebApplication app)
+    public static async Task MigrateDatabase(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
@@ -17,11 +19,16 @@ public static class ApplicationStartupExtensions
             var context = services.GetRequiredService<TodoListDbContext>();
             context.Database.Migrate();
             
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            await TodoListDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
+            
             // 生成种子数据
-            TodoListDbContextSeed.SeedSampleDataAsync(context).Wait();
+            await TodoListDbContextSeed.SeedSampleDataAsync(context);
             
             // 更新部分种子数据以便查看审计字段
-            TodoListDbContextSeed.UpdateSampleDataAsync(context).Wait();
+            await TodoListDbContextSeed.UpdateSampleDataAsync(context);
         }
         catch (Exception ex)
         {
