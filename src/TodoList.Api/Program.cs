@@ -99,7 +99,7 @@ var app = builder.Build();
 app.UseGlobalExceptionHandler();
 // Configure the HTTP request pipeline.
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseRouting();
 // app.UseIpRateLimiting();
 

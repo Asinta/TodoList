@@ -2,13 +2,10 @@
 FROM mcr.microsoft.com/dotnet/aspnet:${NET_IMAGE} AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=https://+;http://+
-ENV ASPNETCORE_HTTPS_PORT=443
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password=Test@Password
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
+
 
 FROM mcr.microsoft.com/dotnet/sdk:${NET_IMAGE} AS build
 WORKDIR /src
