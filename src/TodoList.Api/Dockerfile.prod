@@ -4,7 +4,6 @@ WORKDIR /app
 EXPOSE 80
 
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=https://+;http://+
 
 
 FROM mcr.microsoft.com/dotnet/sdk:${NET_IMAGE} AS build
