@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using TodoList.Api.Extensions;
 using TodoList.Api.Filters;
+using TodoList.Api.Services;
 using TodoList.Application;
+using TodoList.Application.Common.Interfaces;
 using TodoList.Infrastructure;
 using TodoList.Infrastructure.Log;
 
@@ -15,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.ConfigureLog();
 builder.Services.ConfigureApiVersioning();
+builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddResponseCaching();
 builder.Services.AddHttpCacheHeaders(
@@ -99,7 +103,7 @@ var app = builder.Build();
 app.UseGlobalExceptionHandler();
 // Configure the HTTP request pipeline.
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseRouting();
 // app.UseIpRateLimiting();
 

@@ -12,6 +12,7 @@ using TodoList.Application.TodoLists.Queries.GetTodos;
 namespace TodoList.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("/todo-list")]
 public class TodoListController : ControllerBase
 {

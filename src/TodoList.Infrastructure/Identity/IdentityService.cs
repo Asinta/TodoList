@@ -32,7 +32,7 @@ public class IdentityService : IIdentityService
         _userManager = userManager;
 
         // 使用IOptionsMonitor加载配置
-        _jwtConfiguration = jwtOptions.CurrentValue;
+        _jwtConfiguration = jwtOptions.Get("JwtSettings");
     }
 
     public async Task<string> CreateUserAsync(string userName, string password)
@@ -145,7 +145,7 @@ public class IdentityService : IIdentityService
         {
             new(ClaimTypes.Name, User!.UserName),
             new(JwtRegisteredClaimNames.Iss, _jwtConfiguration.ValidIssuer ?? "TodoListApi"),
-            new(JwtRegisteredClaimNames.Aud, _jwtConfiguration.ValidAudience ?? "https://localhost:5050")
+            new(JwtRegisteredClaimNames.Aud, _jwtConfiguration.ValidAudience ?? "http://localhost:5050")
         };
         
         var roles = await _userManager.GetRolesAsync(User);

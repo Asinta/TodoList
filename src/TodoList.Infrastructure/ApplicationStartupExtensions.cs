@@ -17,7 +17,7 @@ public static class ApplicationStartupExtensions
         try
         {
             var context = services.GetRequiredService<TodoListDbContext>();
-            context.Database.Migrate();
+            await context.Database.MigrateAsync();
             
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();

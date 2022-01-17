@@ -11,12 +11,15 @@ namespace TodoList.Infrastructure.Persistence;
 public class TodoListDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IDomainEventService _domainEventService;
+    private readonly ICurrentUserService _currentUserService;
 
     public TodoListDbContext(
         DbContextOptions<TodoListDbContext> options,
-        IDomainEventService domainEventService) : base(options)
+        IDomainEventService domainEventService,
+        ICurrentUserService currentUserService) : base(options)
     {
         _domainEventService = domainEventService;
+        _currentUserService = currentUserService;
     }
 
     public DbSet<Domain.Entities.TodoList> TodoLists => Set<Domain.Entities.TodoList>();
@@ -30,12 +33,12 @@ public class TodoListDbContext : IdentityDbContext<ApplicationUser>
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedBy = "Anonymous";
+                    entry.Entity.CreatedBy = _currentUserService.UserName;
                     entry.Entity.Created = DateTime.UtcNow;
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.LastModifiedBy = "Anonymous";
+                    entry.Entity.LastModifiedBy = _currentUserService.UserName;
                     entry.Entity.LastModified = DateTime.UtcNow;
                     break;
             }
